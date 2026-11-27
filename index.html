@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conversielijst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f8f4;--card:#fff;--ink:#1b2418;--mute:#667060;--line:#dfe6d9;--green:#92d050;--green-d:#4f8a1c;--green-bg:#eef7e2;--warn:#a15c00;--warn-bg:#fff4df;--bad:#b3261e;--bad-bg:#fdeceb;--btn:#2f6b0f;--btn-ink:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12160f;--card:#1a2016;--ink:#e8eee2;--mute:#9aa593;--line:#2c3526;--green:#92d050;--green-d:#a8e06a;--green-bg:#212d17;--warn:#f0b35a;--warn-bg:#33270f;--bad:#f2928b;--bad-bg:#3a1a18;--btn:#92d050;--btn-ink:#10200a}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif;overflow-x:hidden}
+main{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+h1{font:600 28px/1.2 "Space Grotesk",Inter,sans-serif;margin:0 0 4px}
+.lead{color:var(--mute);margin:0 0 24px}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+h2{font:600 17px/1.3 "Space Grotesk",Inter,sans-serif;margin:0 0 12px;display:flex;gap:10px;align-items:center}
+h2 .n{width:26px;height:26px;border-radius:50%;background:var(--green);color:#10200a;display:grid;place-items:center;font-size:14px}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:26px 16px;text-align:center;cursor:pointer;transition:.15s}
+.drop.over,.drop:hover{border-color:var(--green-d);background:var(--green-bg)}
+.drop b{display:block;font-size:16px}
+.drop span{color:var(--mute);font-size:13px}
+.status{min-height:20px;color:var(--mute);font-size:13px;margin-top:8px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-weight:600;color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.code{background:var(--green);color:#10200a;font-weight:600;width:56px;text-align:center}
+.badge{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:500}
+.b-ok{background:var(--green-bg);color:var(--green-d)}
+.b-warn{background:var(--warn-bg);color:var(--warn)}
+.b-bad{background:var(--bad-bg);color:var(--bad)}
+.b-off{background:var(--line);color:var(--mute)}
+input.c{width:56px;text-transform:uppercase;text-align:center;font:inherit;padding:3px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+input.c.unk{border-color:var(--warn);background:var(--warn-bg)}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:5px 12px}
+button.primary{background:var(--btn);color:var(--btn-ink);border-color:var(--btn);font-weight:600;padding:9px 18px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.x{padding:2px 8px;color:var(--mute)}
+.bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin:14px 0 4px}
+.bar label{display:flex;gap:6px;align-items:center;font-size:14px}
+.bar input[type=date]{font:inherit;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--card);color:var(--ink)}
+.hint{color:var(--mute);font-size:13px;margin:6px 0 0}
+ul.notes{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:6px}
+ul.notes li{padding:8px 12px;border-radius:8px;font-size:14px;white-space:normal}
+li.warn{background:var(--warn-bg);color:var(--warn)}
+li.info{background:var(--green-bg);color:var(--ink)}
+li b{margin-right:6px}
+.pv td{font-size:13px}
+.pv td.z{color:var(--bad);font-weight:600}
+.pv td.act{color:var(--mute);max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+select{font:inherit;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+.empty{color:var(--mute);padding:6px 0}
+</style>
+</head>
+<body>
+<main>
+  <h1>Conversielijst</h1>
+  <p class="lead">Sleep alle bestanden van alle sites tegelijk hierheen: per site de basislijst (nb only) en het klantenbestand. Je krijgt per site één resultaatbestand. Alles wordt in je browser berekend, er wordt niets verstuurd.</p>
+
+  <section>
+    <h2><span class="n">1</span>Bestanden</h2>
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Bestanden kiezen">
+      <b>Sleep de bestanden hierheen</b>
+      <span>of klik om te kiezen. Meerdere tegelijk kan. CSV-bestanden uit de mail, basislijsten en klantenbestanden door elkaar.</span>
+    </div>
+    <input type="file" id="pick" multiple accept=".csv,.CSV,text/csv" hidden>
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="tw" id="files"></div>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span>Resultaat per site</h2>
+    <div class="tw" id="sites"></div>
+    <div class="bar">
+      <label>Datum in bestandsnaam <input type="date" id="date"></label>
+      <label><input type="checkbox" id="moji" checked> Verkeerde tekens herstellen (Ã« wordt ë)</label>
+    </div>
+    <ul class="notes" id="notes"></ul>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span>Voorbeeld en download</h2>
+    <div class="row">
+      <label for="pvsel">Voorbeeld van</label>
+      <select id="pvsel"></select>
+      <span class="hint" id="pvname" style="margin:0"></span>
+    </div>
+    <div class="tw" id="preview"></div>
+    <div class="bar">
+      <button class="primary" id="dlall" disabled>Download alles (zip)</button>
+      <span class="hint" id="dlhint"></span>
+    </div>
+  </section>
+</main>
+
+<script>
+/* Conversielijst core: pure logic, runs in the browser and in Node. No screen code here. */
+(function (root) {
+  'use strict';
+
+  const RESORTS = ['VB', 'EB', 'ZH', 'TH', 'SS', 'SP', 'SW', 'SE', 'TB', 'LV', 'HM'];
+  const LINE = /\r\n|\n|\r/;
+
+  // ---------- reading files ----------
+  function decodeBuffer(buf) {
+    const u8 = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+    let text, encoding = 'utf-8';
+    try { text = new TextDecoder('utf-8', { fatal: true }).decode(u8); }
+    catch (e) { text = new TextDecoder('windows-1252').decode(u8); encoding = 'windows-1252'; }
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+    return { text, encoding };
+  }
+
+  // 'customers' | 'base' | 'final' | 'unknown'  (decided by content, never by file name)
+  function classify(text) {
+    const head = text.slice(0, 6000).split(LINE).filter(l => l.trim() !== '').slice(0, 15)
+      .map(l => l.split(';').map(x => x.trim().toLowerCase()));
+    if (!head.length) return 'unknown';
+    const h0 = head[0];
+    if (h0.includes('reservation_id') && (h0.includes('email') || h0.includes('first_name'))) return 'customers';
+    if (h0[0] === 'activity' && h0.includes('reservation id') && h0.includes('email')) return 'final';
+    if (head.some(r => r[0] === 'counter' || r[0] === 'activity')) return 'base';
+    if (/Total\s*;/.test(text.slice(-3000)) && /;\s*\d{5,}\s*;/.test(text)) return 'base';
+    return 'unknown';
+  }
+
+  function codeFromName(name) {
+    const m = /^\s*([A-Za-z]{2,3})(?=[\s\-_.]|$)/.exec(name || '');
+    return m ? m[1].toUpperCase() : '';
+  }
+
+  // ---------- customers file ----------
+  // The file can hold several exports glued together, each with its own header line
+  // (the second block of EB has an extra middle_name column). Columns are therefore
+  // found by header name, per block. Duplicate ids are merged: first non-empty value wins.
+  function parseCustomers(text) {
+    const map = new Map();
+    let cols = null, rows = 0, blocks = 0, conflicts = 0, skipped = 0;
+    const get = (f, i) => {
+      if (i < 0 || i >= f.length) return '';
+      const v = f[i];
+      return v.trim() === '' ? '' : v;
+    };
+    for (const line of text.split(LINE)) {
+      if (line.trim() === '') continue;
+      const f = line.split(';');
+      const low = f.map(x => x.trim().toLowerCase());
+      if (low.includes('reservation_id')) {
+        cols = { id: low.indexOf('reservation_id'), first: low.indexOf('first_name'), last: low.indexOf('last_name'), email: low.indexOf('email') };
+        blocks++;
+        continue;
+      }
+      if (!cols) { skipped++; continue; }
+      const id = (f[cols.id] || '').trim();
+      if (!/^\d+$/.test(id)) { skipped++; continue; }
+      rows++;
+      const rec = { first: get(f, cols.first), last: get(f, cols.last), email: get(f, cols.email) };
+      const cur = map.get(id);
+      if (!cur) { map.set(id, rec); continue; }
+      let conflict = false;
+      for (const k of ['first', 'last', 'email']) {
+        if (cur[k] === '') cur[k] = rec[k];
+        else if (rec[k] !== '' && rec[k].trim().toLowerCase() !== cur[k].trim().toLowerCase()) conflict = true;
+      }
+      if (conflict) conflicts++;
+    }
+    return { map, rows, blocks, conflicts, skipped };
+  }
+
+  // ---------- base list (pivot export) ----------
+  function lastNumber(fields) {
+    for (let i = fields.length - 1; i >= 0; i--) {
+      const s = fields[i].trim();
+      if (/^\d+$/.test(s)) return parseInt(s, 10);
+    }
+    return null;
+  }
+
+  // Reservation id = first field (after the label) that is 5+ digits, wherever it sits.
+  // The activity name is only on the first row of a block; a "... Total" row ends the block.
+  function parseBase(text) {
+    const items = [];
+    const blocks = [];
+    let activity = '', sum = 0, open = false, grand = null;
+    for (const line of text.split(LINE)) {
+      if (line.trim() === '') continue;
+      const f = line.split(';');
+      const label = (f[0] || '').trim();
+      if (/(^|\s)Total$/i.test(label)) {
+        const n = lastNumber(f.slice(1));
+        if (/^grand total$/i.test(label)) grand = n;
+        else blocks.push({ activity: label.replace(/\s*Total$/i, ''), total: n, sum });
+        activity = ''; sum = 0; open = false;
+        continue;
+      }
+      let idIdx = -1;
+      for (let i = 1; i < f.length; i++) if (/^\d{5,}$/.test(f[i].trim())) { idIdx = i; break; }
+      if (idIdx < 0) continue;
+      if (label) activity = label;
+      items.push({ activity, id: f[idIdx].trim() });
+      const n = lastNumber(f.slice(idIdx + 1));
+      if (n !== null) sum += n;
+      open = true;
+    }
+    return { items, blocks, grand, unclosed: open };
+  }
+
+  // ---------- helpers ----------
+  // Repairs text that was UTF-8 but got read as Latin-1/Windows-1252 ("RiÃ«tte" -> "Riëtte").
+  function fixMojibake(s) {
+    if (!/[ÃÂ]/.test(s)) return s;
+    const bytes = new Uint8Array(s.length);
+    for (let i = 0; i < s.length; i++) {
+      const c = s.charCodeAt(i);
+      if (c > 255) return s;
+      bytes[i] = c;
+    }
+    try { return new TextDecoder('utf-8', { fatal: true }).decode(bytes); } catch (e) { return s; }
+  }
+
+  function pad2(n) { return String(n).padStart(2, '0'); }
+  function formatDate(d) { return pad2(d.getDate()) + pad2(d.getMonth() + 1) + d.getFullYear(); } // ddmmyyyy
+
+  // "EB - nb only 50% - conversielijst - 27112026.CSV" -> "EB - nb only 50% sauna.nl - conversielijst -27112026.CSV"
+  function outputName(code, baseName, dateStr) {
+    let mid = 'nb only 50%';
+    const m = /^\s*[A-Za-z]{2,3}\s*-\s*(.+?)\s*-\s*conversielijst/i.exec(baseName || '');
+    if (m) mid = m[1].replace(/\s*sauna\.nl\s*$/i, '').trim();
+    return code + ' - ' + mid + ' sauna.nl - conversielijst -' + dateStr + '.CSV';
+  }
+
+  // ---------- one site ----------
+  // bases: [{name, parsed}], custs: [{name, parsed}]
+  function buildSite(code, bases, custs, opts) {
+    opts = opts || {};
+    const notes = [];
+    const site = { code, status: 'empty', rows: [], notes, fileName: null, csv: null, counts: null };
+    site.baseNames = bases.map(b => b.name);
+    site.custNames = custs.map(c => c.name);
+    if (!bases.length && !custs.length) return site;
+    if (!bases.length) { site.status = 'nobase'; return site; }
+    if (!custs.length) { site.status = 'nocust'; return site; }
+
+    if (bases.length > 1) notes.push({ level: 'warn', text: bases.length + ' basislijsten gevonden voor ' + code + ': ze zijn samengevoegd.' });
+
+    const seen = new Set();
+    const items = [];
+    let dup = 0;
+    for (const b of bases) {
+      for (const it of b.parsed.items) {
+        const key = it.activity + '|' + it.id;
+        if (seen.has(key)) { dup++; continue; }
+        seen.add(key);
+        items.push(it);
+      }
+      const bn = b.name;
+      b.parsed.blocks.forEach(bl => {
+        if (bl.total !== null && bl.total !== bl.sum)
+          notes.push({ level: 'warn', text: 'Basislijst ' + bn + ': de regels tellen op tot ' + bl.sum + ' maar de eigen totaalrij zegt ' + bl.total + '. Bestand mogelijk onvolledig.' });
+      });
+      if (b.parsed.unclosed || (!b.parsed.blocks.length && b.parsed.items.length))
+        notes.push({ level: 'warn', text: 'Basislijst ' + bn + ' mist een totaalrij aan het eind: het bestand is mogelijk afgekapt.' });
+      if (!b.parsed.items.length)
+        notes.push({ level: 'warn', text: 'Basislijst ' + bn + ' bevat geen reserveringen.' });
+    }
+    if (dup) notes.push({ level: 'info', text: dup + ' dubbele regel(s) (zelfde activiteit en reserveringsnummer) overgeslagen.' });
+
+    let missing = [], zFirst = 0, zLast = 0, zEmail = 0, fixed = 0;
+    const rows = items.map(it => {
+      const rec = { first: '', last: '', email: '' };
+      let found = false;
+      for (const c of custs) {
+        const r = c.parsed.map.get(it.id);
+        if (!r) continue;
+        found = true;
+        for (const k of ['first', 'last', 'email']) if (rec[k] === '') rec[k] = r[k];
+      }
+      if (!found) missing.push(it.id);
+      if (opts.fixMojibake) {
+        for (const k of ['first', 'last', 'email']) {
+          const n = fixMojibake(rec[k]);
+          if (n !== rec[k]) { rec[k] = n; fixed++; }
+        }
+      }
+      if (rec.first === '') zFirst++;
+      if (rec.last === '') zLast++;
+      if (rec.email === '') zEmail++;
+      return { activity: it.activity, id: it.id, first: rec.first || '0', last: rec.last || '0', email: rec.email || '0', found };
+    });
+
+    if (missing.length)
+      notes.push({ level: 'warn', text: missing.length + ' reservering(en) staan niet in het klantenbestand (rij met 0 ingevuld): ' + missing.slice(0, 8).join(', ') + (missing.length > 8 ? ' …' : '') + '. Is het klantenbestand van vandaag?' });
+    if (zFirst || zLast || zEmail)
+      notes.push({ level: 'info', text: 'Leeg in het klantenbestand en ingevuld met 0: voornaam ' + zFirst + ', achternaam ' + zLast + ', e-mail ' + zEmail + '.' });
+    custs.forEach(c => {
+      if (c.parsed.conflicts) notes.push({ level: 'info', text: c.parsed.conflicts + ' reserveringsnummer(s) in het klantenbestand komen dubbel voor met een andere naam of e-mail; de eerste waarde is gebruikt.' });
+    });
+    const noAt = rows.filter(r => r.email !== '0' && !r.email.includes('@'));
+    if (noAt.length) notes.push({ level: 'warn', text: noAt.length + ' e-mailadres(sen) zonder @ in het klantenbestand (bijvoorbeeld ' + noAt[0].id + ': ' + noAt[0].email + ').' });
+    if (fixed) notes.push({ level: 'info', text: fixed + ' veld(en) met verkeerde tekens hersteld (bijvoorbeeld Ã« wordt ë).' });
+
+    const codeInAct = items.map(i => /\b([A-Z]{2,3})\s*\(\d+\)\s*$/.exec(i.activity)).find(Boolean);
+    if (codeInAct && codeInAct[1] !== code)
+      notes.push({ level: 'warn', text: 'De activiteit noemt ' + codeInAct[1] + ' maar het bestand staat bij ' + code + '. Controleer de bestandsnaam.' });
+
+    // output: fixed-width activity column, as in the existing result files
+    let width = 'activity'.length;
+    items.forEach(i => { width = Math.max(width, (i.activity + ' Total').length); });
+    const lines = ['activity'.padEnd(width) + ';Reservation ID;first_name;last_name;email'];
+    let prev = null;
+    rows.forEach(r => {
+      lines.push((r.activity !== prev ? r.activity : '').padEnd(width) + ';' + [r.id, r.first, r.last, r.email].join(';'));
+      prev = r.activity;
+    });
+    site.rows = rows;
+    site.csv = '﻿' + lines.join('\r\n') + '\r\n';
+    site.fileName = outputName(code, bases[0].name, opts.dateStr || formatDate(new Date()));
+    site.counts = { rows: rows.length, found: rows.length - missing.length, missing: missing.length };
+    site.status = rows.length ? 'ready' : 'norows';
+    return site;
+  }
+
+  // files: [{name, type, code, parsed}]  ->  [{site}] in resort order, unknown codes last
+  function buildAll(files, opts) {
+    const codes = RESORTS.slice();
+    files.forEach(f => { if ((f.type === 'base' || f.type === 'customers') && f.code && !codes.includes(f.code)) codes.push(f.code); });
+    return codes.map(code => {
+      const bases = files.filter(f => f.type === 'base' && f.code === code);
+      const custs = files.filter(f => f.type === 'customers' && f.code === code);
+      const s = buildSite(code, bases, custs, opts);
+      s.known = RESORTS.includes(code);
+      return s;
+    });
+  }
+
+  // ---------- zip (store only, UTF-8 names), so 11 files download as one ----------
+  const CRC_TABLE = (() => {
+    const t = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
+    return t;
+  })();
+  function crc32(u8) { let c = -1; for (let i = 0; i < u8.length; i++) c = CRC_TABLE[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ -1) >>> 0; }
+
+  function makeZip(entries, date) {
+    date = date || new Date();
+    const enc = new TextEncoder();
+    const dosTime = ((date.getHours() << 11) | (date.getMinutes() << 5) | (date.getSeconds() >> 1)) & 0xFFFF;
+    const dosDate = (((date.getFullYear() - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate()) & 0xFFFF;
+    const chunks = [], central = [];
+    let offset = 0;
+    entries.forEach(e => {
+      const name = enc.encode(e.name);
+      const data = typeof e.data === 'string' ? enc.encode(e.data) : e.data;
+      const crc = crc32(data);
+      const lh = new DataView(new ArrayBuffer(30));
+      lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+      lh.setUint16(10, dosTime, true); lh.setUint16(12, dosDate, true); lh.setUint32(14, crc, true);
+      lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+      chunks.push(new Uint8Array(lh.buffer), name, data);
+      const ch = new DataView(new ArrayBuffer(46));
+      ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+      ch.setUint16(12, dosTime, true); ch.setUint16(14, dosDate, true); ch.setUint32(16, crc, true);
+      ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, name.length, true);
+      ch.setUint32(42, offset, true);
+      central.push(new Uint8Array(ch.buffer), name);
+      offset += 30 + name.length + data.length;
+    });
+    let cdSize = 0;
+    central.forEach(c => { cdSize += c.length; });
+    const end = new DataView(new ArrayBuffer(22));
+    end.setUint32(0, 0x06054b50, true); end.setUint16(8, entries.length, true); end.setUint16(10, entries.length, true);
+    end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+    const all = chunks.concat(central, [new Uint8Array(end.buffer)]);
+    const out = new Uint8Array(offset + cdSize + 22);
+    let p = 0;
+    all.forEach(c => { out.set(c, p); p += c.length; });
+    return out;
+  }
+
+  const api = { RESORTS, decodeBuffer, classify, codeFromName, parseCustomers, parseBase, fixMojibake, formatDate, outputName, buildSite, buildAll, crc32, makeZip };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else root.Core = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+(function () {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const TYPE = {
+    base: ['Basislijst', 'b-ok'], customers: ['Klantenbestand', 'b-ok'],
+    final: ['Is al een resultaat, genegeerd', 'b-off'], unknown: ['Niet herkend, genegeerd', 'b-bad']
+  };
+  const STATUS = {
+    ready: ['Klaar', 'b-ok'], norows: ['Geen reserveringen', 'b-bad'], nobase: ['Basislijst ontbreekt', 'b-warn'],
+    nocust: ['Klantenbestand ontbreekt', 'b-warn'], empty: ['Geen bestanden', 'b-off']
+  };
+  const state = { files: [], uid: 1, results: [], preview: '', busy: false };
+
+  function todayIso() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function dateStr() {
+    const v = $('#date').value || todayIso();
+    return v.split('-').reverse().join('');
+  }
+  const tick = () => new Promise(r => setTimeout(r, 0));
+  const kb = n => n > 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' kB';
+
+  async function addFiles(list) {
+    const arr = Array.from(list || []);
+    if (!arr.length) return;
+    state.busy = true;
+    for (let i = 0; i < arr.length; i++) {
+      const f = arr[i];
+      $('#status').textContent = 'Inlezen ' + (i + 1) + ' van ' + arr.length + ': ' + f.name + ' …';
+      await tick();
+      try {
+        const buf = await f.arrayBuffer();
+        const dec = Core.decodeBuffer(buf);
+        const type = Core.classify(dec.text);
+        const e = { uid: state.uid++, name: f.name, size: buf.byteLength, type, encoding: dec.encoding, code: Core.codeFromName(f.name), parsed: null, rows: 0 };
+        if (type === 'customers') { e.parsed = Core.parseCustomers(dec.text); e.rows = e.parsed.map.size; }
+        else if (type === 'base') { e.parsed = Core.parseBase(dec.text); e.rows = e.parsed.items.length; }
+        state.files = state.files.filter(x => !(x.name === e.name && x.size === e.size));
+        state.files.push(e);
+      } catch (err) {
+        state.files.push({ uid: state.uid++, name: f.name, size: 0, type: 'unknown', code: '', rows: 0, error: String(err && err.message || err) });
+      }
+    }
+    state.busy = false;
+    $('#status').textContent = arr.length + ' bestand(en) ingelezen.';
+    recompute();
+  }
+
+  function recompute() {
+    state.results = Core.buildAll(state.files, { fixMojibake: $('#moji').checked, dateStr: dateStr() });
+    const ready = state.results.filter(s => s.status === 'ready');
+    if (!ready.find(s => s.code === state.preview)) state.preview = ready.length ? ready[0].code : '';
+    render();
+  }
+
+  function render() {
+    // files
+    const fh = state.files.length
+      ? '<table><thead><tr><th>Bestand</th><th>Herkend als</th><th>Site</th><th class="num">Regels</th><th></th></tr></thead><tbody>' +
+        state.files.map(f => {
+          const t = TYPE[f.type];
+          const used = f.type === 'base' || f.type === 'customers';
+          const unk = used && !Core.RESORTS.includes(f.code);
+          return '<tr><td>' + esc(f.name) + '<div class="hint" style="margin:0">' + kb(f.size) + (f.encoding === 'windows-1252' ? ', tekenset Windows-1252' : '') + '</div></td>' +
+            '<td><span class="badge ' + t[1] + '">' + t[0] + '</span></td>' +
+            '<td>' + (used ? '<input class="c' + (unk ? ' unk' : '') + '" data-uid="' + f.uid + '" value="' + esc(f.code) + '" maxlength="3" aria-label="Sitecode">' : '') + '</td>' +
+            '<td class="num">' + (used ? f.rows.toLocaleString('nl-NL') : '') + '</td>' +
+            '<td><button class="x" data-rm="' + f.uid + '" aria-label="Verwijder">✕</button></td></tr>';
+        }).join('') + '</tbody></table>' +
+        '<div class="row" style="margin-top:10px"><button id="clear">Alles wissen</button></div>'
+      : '<div class="empty">Nog geen bestanden.</div>';
+    $('#files').innerHTML = fh;
+
+    // sites
+    $('#sites').innerHTML = '<table><thead><tr><th>Site</th><th class="num">Reserveringen</th><th class="num">Gevonden</th><th class="num">Ontbreekt</th><th>Status</th><th></th></tr></thead><tbody>' +
+      state.results.filter(s => s.known || s.status !== 'empty').map(s => {
+        const st = STATUS[s.status];
+        const warn = s.notes.some(n => n.level === 'warn');
+        const badge = s.status === 'ready' && warn ? ['Klaar, let op', 'b-warn'] : st;
+        const c = s.counts;
+        return '<tr><td class="code">' + esc(s.code) + '</td>' +
+          '<td class="num">' + (c ? c.rows : '') + '</td><td class="num">' + (c ? c.found : '') + '</td><td class="num">' + (c ? c.missing : '') + '</td>' +
+          '<td><span class="badge ' + badge[1] + '">' + badge[0] + '</span></td>' +
+          '<td>' + (s.status === 'ready' ? '<button data-dl="' + esc(s.code) + '">Download CSV</button>' : '') + '</td></tr>';
+      }).join('') + '</tbody></table>';
+
+    // notes (warnings first), plus per-file problems
+    const notes = [];
+    state.results.forEach(s => s.notes.forEach(n => notes.push({ level: n.level, text: s.code + ': ' + n.text })));
+    state.files.filter(f => f.type === 'unknown').forEach(f => notes.push({ level: 'warn', text: f.name + ': bestand niet herkend en genegeerd.' }));
+    state.files.filter(f => f.type === 'final').forEach(f => notes.push({ level: 'info', text: f.name + ' is al een resultaatbestand en wordt genegeerd.' }));
+    state.files.filter(f => (f.type === 'base' || f.type === 'customers') && !Core.RESORTS.includes(f.code))
+      .forEach(f => notes.push({ level: 'warn', text: f.name + ': onbekende sitecode "' + f.code + '". Pas de code aan in stap 1.' }));
+    notes.sort((a, b) => (a.level === 'warn' ? 0 : 1) - (b.level === 'warn' ? 0 : 1));
+    $('#notes').innerHTML = notes.map(n => '<li class="' + n.level + '"><b>' + (n.level === 'warn' ? 'Let op' : 'Info') + '</b>' + esc(n.text) + '</li>').join('');
+
+    // preview
+    const ready = state.results.filter(s => s.status === 'ready');
+    $('#pvsel').innerHTML = ready.map(s => '<option value="' + esc(s.code) + '"' + (s.code === state.preview ? ' selected' : '') + '>' + esc(s.code) + '</option>').join('');
+    $('#pvsel').disabled = !ready.length;
+    const cur = ready.find(s => s.code === state.preview);
+    if (cur) {
+      $('#pvname').textContent = cur.fileName;
+      $('#preview').innerHTML = '<table class="pv"><thead><tr><th>activity</th><th>Reservation ID</th><th>first_name</th><th>last_name</th><th>email</th></tr></thead><tbody>' +
+        cur.rows.slice(0, 12).map((r, i) => '<tr><td class="act">' + (i === 0 || r.activity !== cur.rows[i - 1].activity ? esc(r.activity) : '') + '</td><td>' + esc(r.id) + '</td>' +
+          ['first', 'last', 'email'].map(k => '<td' + (r[k] === '0' ? ' class="z"' : '') + '>' + esc(r[k]) + '</td>').join('') + '</tr>').join('') +
+        '</tbody></table><div class="hint">Eerste 12 van ' + cur.rows.length + ' regels. Een rode 0 betekent: leeg of niet gevonden in het klantenbestand.</div>';
+    } else {
+      $('#pvname').textContent = '';
+      $('#preview').innerHTML = '<div class="empty">Zodra een site een basislijst én een klantenbestand heeft, zie je hier het resultaat.</div>';
+    }
+
+    $('#dlall').disabled = !ready.length;
+    $('#dlall').textContent = ready.length ? 'Download alles (' + ready.length + ' ' + (ready.length === 1 ? 'bestand' : 'bestanden') + ', zip)' : 'Download alles (zip)';
+    const known = state.results.filter(s => s.known);
+    const pending = known.filter(s => s.status !== 'ready' && s.status !== 'empty').length;
+    const none = known.filter(s => s.status === 'empty').length;
+    $('#dlhint').textContent = ready.length ? ready.length + ' van ' + known.length + ' sites klaar' + (pending ? ', ' + pending + ' onvolledig' : '') + (none ? ', ' + none + ' zonder bestanden' : '') + '.' : 'Nog niets om te downloaden.';
+  }
+
+  function save(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  }
+  const csvBlob = s => new Blob([s.csv], { type: 'text/csv;charset=utf-8' });
+
+  // events
+  const drop = $('#drop'), pick = $('#pick');
+  drop.addEventListener('click', () => pick.click());
+  drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick.click(); } });
+  pick.addEventListener('change', () => { addFiles(pick.files).then(() => { pick.value = ''; }); });
+  ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => e.preventDefault());
+
+  $('#files').addEventListener('change', e => {
+    const uid = e.target.dataset && e.target.dataset.uid;
+    if (!uid) return;
+    const f = state.files.find(x => x.uid === +uid);
+    if (f) { f.code = e.target.value.trim().toUpperCase(); recompute(); }
+  });
+  $('#files').addEventListener('click', e => {
+    const rm = e.target.dataset && e.target.dataset.rm;
+    if (rm) { state.files = state.files.filter(x => x.uid !== +rm); recompute(); }
+    if (e.target.id === 'clear') { state.files = []; $('#status').textContent = ''; recompute(); }
+  });
+  $('#sites').addEventListener('click', e => {
+    const code = e.target.dataset && e.target.dataset.dl;
+    const s = code && state.results.find(x => x.code === code);
+    if (s) save(csvBlob(s), s.fileName);
+  });
+  $('#pvsel').addEventListener('change', e => { state.preview = e.target.value; render(); });
+  $('#date').addEventListener('change', recompute);
+  $('#moji').addEventListener('change', recompute);
+  $('#dlall').addEventListener('click', () => {
+    const ready = state.results.filter(s => s.status === 'ready');
+    if (!ready.length) return;
+    const zip = Core.makeZip(ready.map(s => ({ name: s.fileName, data: s.csv })));
+    save(new Blob([zip], { type: 'application/zip' }), 'conversielijsten ' + dateStr() + '.zip');
+  });
+
+  $('#date').value = todayIso();
+  window.App = { addFiles, state, recompute };
+  recompute();
+})();
+</script>
+</body>
+</html>
